@@ -1,10 +1,12 @@
-﻿using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using EvolutionPlugins.OpenDeathMessages.API;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OpenMod.API.Ioc;
 using OpenMod.UnityEngine.Extensions;
+using OpenMod.API.Permissions;
 using OpenMod.Unturned.Players;
+using OpenMod.Unturned.Users;
 using SDG.Unturned;
 using Steamworks;
 using System.Collections.Generic;
@@ -18,7 +20,9 @@ namespace EvolutionPlugins.OpenDeathMessages.Services
     public class PlayerMessager : IPlayerMessager
     {
         private readonly DisplayType m_DisplayType;
+        private readonly IUnturnedUserDirectory m_UnturnedUserDirectory;
         private readonly HashSet<CSteamID> m_GroupOnlyMessagger = new();
+        private readonly IPermissionChecker m_PermissionChecker;
 
         public PlayerMessager(IConfiguration configuration)
         {
@@ -46,10 +50,12 @@ namespace EvolutionPlugins.OpenDeathMessages.Services
 
             if (ShouldMessageToGroup(player))
             {
-                foreach (var teammate in Provider.clients
-                    .Where(x => !x.player.quests.isMemberOfAGroup || x.player.quests.isMemberOfSameGroupAs(player.Player)))
+                foreach (var user in m_UnturnedUserDirectory.GetOnlineUsers())
                 {
-                    ChatManager.serverSendMessage(message, unityColor, toPlayer: teammate, iconURL: iconUrl, useRichTextFormatting: true);
+                    if (!user.Player.Player.quests.isMemberOfAGroup || user.Player.Player.quests.isMemberOfSameGroupAs(player.Player) || await m_PermissionChecker.CheckPermissionAsync(user, "test") is PermissionGrantResult.Grant)
+                    {
+                        ChatManager.serverSendMessage(message, unityColor, toPlayer: user.Player.Player, iconURL: iconUrl, useRichTextFormatting: true);
+                    }
                 }
 
                 return;
