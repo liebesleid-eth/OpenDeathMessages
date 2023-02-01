@@ -1,4 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OpenMod.API.Plugins;
 using OpenMod.API.Permissions;

@@ -1,4 +1,4 @@
-﻿using EvolutionPlugins.OpenDeathMessages.API;
+using EvolutionPlugins.OpenDeathMessages.API;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using OpenMod.API.Eventing;
@@ -77,24 +77,6 @@ namespace EvolutionPlugins.OpenDeathMessages.Events
 
             await m_PlayerMessager.SendMessageGlobalOrGroupAsync(victimUser.Player, message,
               m_Configuration["iconUrl"], ColorTranslator.FromHtml(m_Configuration["color"]));
-            //loop thru all online players
-            /*foreach (var user in m_UnturnedUserDirectory.GetOnlineUsers())
-            {
-                //check if the player has the permission
-                if (await m_PermissionChecker.CheckPermissionAsync(user, "English") == PermissionGrantResult.Grant)
-                {
-                    await m_PlayerMessager.SendMessageGlobalOrGroupAsync(victimUser.Player, "testeo2",
-                        m_Configuration["iconUrl"], ColorTranslator.FromHtml(m_Configuration["color"]));
-                }
-                if (await m_PermissionChecker.CheckPermissionAsync(user, "Spanish") == PermissionGrantResult.Grant)
-                {
-                    await m_PlayerMessager.SendMessageGlobalOrGroupAsync(victimUser.Player, messageSpanish,
-                        m_Configuration["iconUrl"], ColorTranslator.FromHtml(m_Configuration["color"]));
-                }
-            }*/
-
-            //await m_PlayerMessager.SendMessageGlobalOrGroupAsync(victimUser.Player, message,
-            //  m_Configuration["iconUrl"], ColorTranslator.FromHtml(m_Configuration["color"]));
         }
     }
 }
