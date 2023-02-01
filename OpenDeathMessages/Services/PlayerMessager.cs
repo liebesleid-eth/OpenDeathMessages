@@ -4,7 +4,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OpenMod.API.Ioc;
 using OpenMod.UnityEngine.Extensions;
+using OpenMod.API.Permissions;
 using OpenMod.Unturned.Players;
+using OpenMod.Unturned.Users;
 using SDG.Unturned;
 using Steamworks;
 using System.Collections.Generic;
@@ -18,11 +20,15 @@ namespace EvolutionPlugins.OpenDeathMessages.Services
     public class PlayerMessager : IPlayerMessager
     {
         private readonly DisplayType m_DisplayType;
+        private readonly IUnturnedUserDirectory m_UnturnedUserDirectory;
         private readonly HashSet<CSteamID> m_GroupOnlyMessagger = new();
+        private readonly IPermissionChecker m_PermissionChecker;
 
-        public PlayerMessager(IConfiguration configuration)
+        public PlayerMessager(IConfiguration configuration, IUnturnedUserDirectory unturnedUserDirectory, IPermissionChecker permissionChecker)
         {
-            m_DisplayType = (DisplayType)(configuration.GetValue("defaultDisplay:groupDeath", false) ? 1 : 0);
+        m_DisplayType = (DisplayType)(configuration.GetValue("defaultDisplay:groupDeath", false) ? 1 : 0);
+        m_UnturnedUserDirectory = unturnedUserDirectory;
+        m_PermissionChecker = permissionChecker;
         }
 
         private bool ShouldMessageToGroup(UnturnedPlayer player) => m_GroupOnlyMessagger.Contains(player.SteamId) || m_DisplayType is DisplayType.Group;
@@ -44,18 +50,15 @@ namespace EvolutionPlugins.OpenDeathMessages.Services
             var unityColor = color.ToUnityColor();
             await UniTask.SwitchToMainThread();
 
-            if (ShouldMessageToGroup(player))
-            {
-                foreach (var teammate in Provider.clients
-                    .Where(x => !x.player.quests.isMemberOfAGroup || x.player.quests.isMemberOfSameGroupAs(player.Player)))
+            foreach (var user in m_UnturnedUserDirectory.GetOnlineUsers())
                 {
-                    ChatManager.serverSendMessage(message, unityColor, toPlayer: teammate, iconURL: iconUrl, useRichTextFormatting: true);
+                    if (await m_PermissionChecker.CheckPermissionAsync(user, "English") is PermissionGrantResult.Grant)
+                    {
+                        user.PrintMessageAsync(message);
+                    }
                 }
 
                 return;
-            }
-
-            ChatManager.serverSendMessage(message, unityColor, iconURL: iconUrl, mode: EChatMode.GLOBAL, useRichTextFormatting: true);
         }
     }
 }
