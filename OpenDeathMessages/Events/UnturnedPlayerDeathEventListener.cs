@@ -75,8 +75,19 @@ namespace EvolutionPlugins.OpenDeathMessages.Events
                 return;
             }
 
-            await m_PlayerMessager.SendMessageGlobalOrGroupAsync(victimUser.Player, message,
-              m_Configuration["iconUrl"], ColorTranslator.FromHtml(m_Configuration["color"]));
+            foreach (var user in m_UnturnedUserDirectory.GetOnlineUsers())
+                {
+                    if (await m_PermissionChecker.CheckPermissionAsync(user, "English") is PermissionGrantResult.Grant)
+                    {
+                        user.PrintMessageAsync(message, ColorTranslator.FromHtml(m_Configuration["color"]));
+                    }
+                    if (await m_PermissionChecker.CheckPermissionAsync(user, "Spanish") is PermissionGrantResult.Grant)
+                    {
+                        user.PrintMessageAsync(messageSpanish, ColorTranslator.FromHtml(m_Configuration["color"]));
+                    }
+                }
+
+                return;
         }
     }
 }
