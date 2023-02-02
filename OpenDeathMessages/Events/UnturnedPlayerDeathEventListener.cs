@@ -80,10 +80,12 @@ namespace EvolutionPlugins.OpenDeathMessages.Events
                     if (await m_PermissionChecker.CheckPermissionAsync(user, "English") is PermissionGrantResult.Grant)
                     {
                         user.PrintMessageAsync(message, ColorTranslator.FromHtml(m_Configuration["color"]));
+                        return;
                     }
                     if (await m_PermissionChecker.CheckPermissionAsync(user, "Spanish") is PermissionGrantResult.Grant)
                     {
                         user.PrintMessageAsync(messageSpanish, ColorTranslator.FromHtml(m_Configuration["color"]));
+                        return;
                     }
                 }
 
