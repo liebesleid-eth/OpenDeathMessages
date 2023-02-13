@@ -76,20 +76,16 @@ namespace EvolutionPlugins.OpenDeathMessages.Events
             }
 
             foreach (var user in m_UnturnedUserDirectory.GetOnlineUsers())
+            {
+                if (await m_PermissionChecker.CheckPermissionAsync(user, "English") is PermissionGrantResult.Grant)
                 {
-                    if (await m_PermissionChecker.CheckPermissionAsync(user, "English") is PermissionGrantResult.Grant)
-                    {
-                        user.PrintMessageAsync(message, ColorTranslator.FromHtml(m_Configuration["color"]));
-                        return;
-                    }
-                    if (await m_PermissionChecker.CheckPermissionAsync(user, "Spanish") is PermissionGrantResult.Grant)
-                    {
-                        user.PrintMessageAsync(messageSpanish, ColorTranslator.FromHtml(m_Configuration["color"]));
-                        return;
-                    }
+                    user.PrintMessageAsync(message, ColorTranslator.FromHtml(m_Configuration["color"]));
                 }
-
-                return;
+                if (await m_PermissionChecker.CheckPermissionAsync(user, "Spanish") is PermissionGrantResult.Grant)
+                {
+                    user.PrintMessageAsync(messageSpanish, ColorTranslator.FromHtml(m_Configuration["color"]));
+                }
+            }
         }
     }
 }
