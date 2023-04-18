@@ -54,7 +54,7 @@ namespace EvolutionPlugins.OpenDeathMessages.Services
                 {
                     if (await m_PermissionChecker.CheckPermissionAsync(user, "English") is PermissionGrantResult.Grant)
                     {
-                        user.PrintMessageAsync(message);
+                        await user.PrintMessageAsync(message);
                     }
                 }
 

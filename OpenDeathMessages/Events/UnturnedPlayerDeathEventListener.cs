@@ -66,7 +66,7 @@ namespace EvolutionPlugins.OpenDeathMessages.Events
                 Instigator = instigatorUser,
                 @event.DeathPosition,
                 Distance = distance,
-                Node = location?.Name ?? string.Empty,
+                Node = location?.Name ?? "Debug message: location is null",
                 Limb = m_StringLocalizer[$"limbParse:{@event.Limb.ToString().ToLower()}"].Value
             }];
 
@@ -79,11 +79,11 @@ namespace EvolutionPlugins.OpenDeathMessages.Events
             {
                 if (await m_PermissionChecker.CheckPermissionAsync(user, "English") is PermissionGrantResult.Grant)
                 {
-                    user.PrintMessageAsync(message, ColorTranslator.FromHtml(m_Configuration["color"]));
+                    await user.PrintMessageAsync(messageSpanish, ColorTranslator.FromHtml(m_Configuration["color"]), true, m_Configuration["iconUrl"]);
                 }
                 if (await m_PermissionChecker.CheckPermissionAsync(user, "Spanish") is PermissionGrantResult.Grant)
                 {
-                    user.PrintMessageAsync(messageSpanish, ColorTranslator.FromHtml(m_Configuration["color"]));
+                    await user.PrintMessageAsync(messageSpanish, ColorTranslator.FromHtml(m_Configuration["color"]), true, m_Configuration["iconUrl"]);
                 }
             }
         }
